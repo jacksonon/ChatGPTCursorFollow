@@ -12,17 +12,6 @@
 1. 如下代码
 
 ```
-#import "ViewController.h"
-
-@interface ViewController ()
-@property (nonatomic, strong) UITextView *textView;
-@property (nonatomic, strong) UIImageView *cursorView;
-@property (nonatomic, copy) NSString *curNews;
-@end
-
-@implementation ViewController
-
-static int cur = 0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -30,14 +19,11 @@ static int cur = 0;
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"news" ofType:@"txt"];
     NSError *error = nil;
     NSString *fileContents = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
-
     if (error) {
         NSLog(@"Error reading file: %@", error.localizedDescription);
     } else {
-        NSLog(@"File contents: %@", fileContents);
         self.curNews = fileContents;
     }
-
 
     self.textView = [[UITextView alloc] init];
     self.textView.font = [UIFont systemFontOfSize:16];
@@ -53,7 +39,7 @@ static int cur = 0;
         [self.textView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:0]
     ]];
 
-    self.cursorView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+    self.cursorView = [[UIImageView alloc] initWithFrame:CGRectZero];
     self.cursorView.backgroundColor = [UIColor blueColor];
     self.cursorView.layer.masksToBounds = YES;
     self.cursorView.layer.cornerRadius = 15/2.0;
@@ -66,28 +52,21 @@ static int cur = 0;
 - (void)addText {
     if (cur < [self.curNews length]) {
 
-        // 0.1 - 0.3 的随机数
         float t = (arc4random() % 3 + 1) / 10.0;
         [NSThread sleepForTimeInterval:t];
-
-        // 读文本
         int read = arc4random() % 15;
         if ((cur + read) > self.curNews.length) {
             read = (int)self.curNews.length - cur;
         }
         [self.textView insertText:[self.curNews substringWithRange:NSMakeRange(cur, read)]];
         
-        // 在文本输入过程中将其添加到光标位置
         UITextRange *selectedRange = self.textView.selectedTextRange;
         CGRect cursorRect = [self.textView caretRectForPosition:selectedRange.start];
-        cursorRect = CGRectInset(cursorRect, 0, 3); // 将光标位置略微调整，以使其与文本对齐
+        cursorRect = CGRectInset(cursorRect, 0, 3);
         cursorRect.size = CGSizeMake(15, 15);
-        
-        // 当文本内容超出textView.rect.size.height
         if (cursorRect.origin.y > CGRectGetMaxY(self.textView.frame)) {
             [self.textView setContentOffset:CGPointMake(0, self.textView.contentSize.height - self.textView.frame.size.height) animated:NO];
-            cursorRect.origin.y = CGRectGetMaxY(self.textView.frame) - 15 - 2; // 底间距0 + 光标本身15 + 光标上移2
-            NSLog(@"当前光标Y值 -> %f (%f)", cursorRect.origin.y, CGRectGetMaxY(self.textView.frame));
+            cursorRect.origin.y = CGRectGetMaxY(self.textView.frame) - 15 - 2;
         }
         
         [UIView animateWithDuration:0.1 animations:^{
