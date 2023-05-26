@@ -1,4 +1,6 @@
-仿写iOS GPT 应用流式输出 + 可追随光标
+![](https://github.com/kiwiwow/ChatGPTCursorFollow/blob/main/RPReplay_Final1685067589.gif?raw=true)
+
+简单写了下 iOS GPT 应用流式输出 + 可追随光标
 也没什么代码，就直接传了。
 
 对于我想要实现的方案来说，整体就是一个textView，关于光标或者头像位置，则采用计算方式放置。
